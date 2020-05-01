@@ -4,62 +4,60 @@ import './App.css';
 
 function App() {
   return (
-    <React.StrictMode>
+    <div>
       <LoginControl />
       <LightControl />
-    </React.StrictMode>
+    </div>
   );
 }
 
 function Greeting(props) {
   const isLoggedIn = props.isLoggedIn;
-  if (isLoggedIn) {
-    return <UserGreeting />;
-  } else {
-    return <GuestGreeting />;
-  }
-}
-
-function UserGreeting() {
-  return (<p><h1>&nbsp;Welcome back!</h1></p>);
-}
-
-function GuestGreeting() {
-  return (<p><h1>&nbsp;Please Sign Up!</h1></p>);
+  return (<p><h1>{isLoggedIn ? 'Welcome Back!' : 'Please Sign Up!'}</h1></p>);
 }
 
 class LoginControl extends React.Component {
   constructor(props) {
     super(props);
     this.state = { isLoggedIn: false };
-
-    this.handleLoginClick = this.handleLoginClick.bind(this);
-    this.handleLogoutClick = this.handleLogoutClick.bind(this);
   }
 
-  handleLoginClick() {
+  /* onClick verirken farklı şekillerde de verilebilir */
+  /* 1- normal fonksiyonu onClick'e yazarken this i kullanmak için ok fonksiyondan yararlanırız onClick 
+      onClick={() => this.handleLoginClick()}*/
+  /* 2- ok fonksiyonu onClick'e yazarken direk olarak çağırmamız yeterli olacaktır  
+      onClick={this.handleLogoutClick} */
+  /* 3- fonksiyonu component e bind edersek de direk olarak ismi ile onClick'e yazabiliriz.  
+      this.handleLightButtonClick = this.handleLightButtonClick.bind(this); 
+      onClick={this.handleLogoutClick}
+      */
+
+  handleLoginClick = () => {
     this.setState({ isLoggedIn: true });
   }
 
-  handleLogoutClick() {
+  handleLogoutClick = () => {
     this.setState({ isLoggedIn: false });
   }
 
   render() {
-    let button;
-    if (this.state.isLoggedIn) {
-      button = <LogoutButton onClick={this.handleLogoutClick} />;
-    } else {
-      button = <LoginButton onClick={this.handleLoginClick} />;
-    }
-
     return (
       <div>
         <Greeting isLoggedIn={this.state.isLoggedIn} />
-        {button}
+        <LoginButtonControl onLoginClick={this.handleLoginClick} onLogoutClick={this.handleLogoutClick} isLoggedIn={this.state.isLoggedIn} />
       </div>
     );
   }
+}
+
+function LoginButtonControl(props) {
+  const onLoginClick = props.onLoginClick;
+  const onLogoutClick = props.onLogoutClick;
+  const isLoggedIn = props.isLoggedIn;
+
+  return (<button onClick={isLoggedIn ? onLogoutClick : onLoginClick} className={isLoggedIn ? 'logout' : 'login'}>
+    {isLoggedIn ? 'Logout' : 'Sign Up'}
+  </button>);
 }
 
 class LightControl extends React.Component {
@@ -72,7 +70,6 @@ class LightControl extends React.Component {
   }
 
   handleLightButtonClick() {
-    console.log('geldii');
     this.setState(state => ({
       isLightOn: !state.isLightOn
     }));
@@ -83,21 +80,11 @@ class LightControl extends React.Component {
   };
 }
 
-function LoginButton(props) {
-  return (<button onClick={props.onClick} style={{ width: "250px", height: "50px", backgroundColor: "green", color: "white" }}>Login</button>);
-}
-
-function LogoutButton(props) {
-  return (<button onClick={props.onClick} style={{ width: "250px", height: "50px", backgroundColor: "red", color: "white" }}>Logout</button>);
-}
-
 
 function LightButton(props) {
-  if (props.isLightOn) {
-    return (<button onClick={props.onClick} style={{ backgroundColor: "lightblue", width: "250px", height: "50px" }}>Işığı Kapat</button>);
-  } else {
-    return (<button onClick={props.onClick} style={{ backgroundColor: "black", color: "white", width: "250px", height: "50px" }}>Işığı Aç</button>);
-  }
+  return (<button onClick={props.onClick} style={{ backgroundColor: props.isLightOn ? 'gray' : 'balck' }}>
+    {props.isLightOn ? 'Turn Off the Light' : 'Turn On the Light'}
+  </button>);
 }
 
 export default App;
